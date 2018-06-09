@@ -7,3 +7,5 @@ Library
 obj
 Temp
 *.sln
+Books
+booksdata.json

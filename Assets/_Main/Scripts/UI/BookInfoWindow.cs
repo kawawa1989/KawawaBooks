@@ -62,4 +62,12 @@ public class BookInfoWindow : MonoBehaviour {
 		Document.Save ();
 		Destroy (gameObject);
 	}
+
+	[SerializeField]
+	TagDropdown tagSelector;
+	[SerializeField]
+	InputField tagEditField;
+	public void OnDropdownSelected(int index){
+		tagEditField.text = tagSelector.value;
+	}
 }

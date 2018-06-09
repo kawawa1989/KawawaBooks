@@ -37,11 +37,17 @@ public class TopPage : MonoBehaviour {
 			var uri1 = new System.Uri (currentDirectory);
 			var uri2 = new System.Uri (path);
 			var releative = uri1.MakeRelativeUri (uri2);
+			var dirinfo = new System.IO.DirectoryInfo(path);
 
 			Debug.Log ("current:" + currentDirectory);
 			Debug.Log ("releative:" + releative.ToString ());
-			Document.instance.AddBook (path);
-		}, () => { }, true, System.IO.Directory.GetCurrentDirectory ());
+			Document.instance.AddBook (dirinfo.Name, releative.ToString());
+		}, () => { }, (fileItem)=>{
+			if(Document.instance.ContainsBook(fileItem.Name)){
+				return false;
+			}
+			return true;
+		}, true, System.IO.Directory.GetCurrentDirectory ());
 	}
 
 	public void OpenBookList () {

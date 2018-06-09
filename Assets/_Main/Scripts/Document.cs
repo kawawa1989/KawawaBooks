@@ -18,6 +18,7 @@ public class BookData {
 	// 閲覧回数
 	// ディレクトリにアクセスした段階で１カウントします
 	public int watchCount = 0;
+	public string bookName;
 }
 
 // アプリ内で使われる情報を保持します
@@ -45,17 +46,26 @@ public class Document {
 		return UnityEngine.JsonUtility.FromJson<Document> (json);
 	}
 
-	public BookData AddBook (string path) {
+	public BookData AddBook (string bookName, string path) {
 		var book = directoryPaths.Find ((x) => x.path == path);
 		if (book != null) {
 			return book;
 		}
 		var newBook = new BookData ();
+		newBook.bookName = bookName;
 		newBook.path = path;
 		directoryPaths.Add (newBook);
 		UnityEngine.Debug.Log ("登録 path:" + path);
 		Save ();
 		return newBook;
+	}
+
+	public bool ContainsBook(string bookName){
+		var bookData = directoryPaths.Find((x)=>x.bookName == bookName);
+		if (bookData != null) {
+			return true;
+		}
+		return false;
 	}
 
 	[NonSerialized]

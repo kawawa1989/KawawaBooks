@@ -432,6 +432,7 @@ namespace SimpleFileBrowser
 
 		private OnSuccess onSuccess;
 		private OnCancel onCancel;
+		private Func<FileSystemInfo,bool> checkValidateItem;
 		#endregion
 
 		#region Messages
@@ -681,6 +682,7 @@ namespace SimpleFileBrowser
 
 			onSuccess = null;
 			onCancel = null;
+			checkValidateItem = null;
 		}
 
 		private void OnOperationCanceled( bool invokeCancelCallback )
@@ -695,6 +697,7 @@ namespace SimpleFileBrowser
 
 			onSuccess = null;
 			onCancel = null;
+			checkValidateItem = null;
 		}
 
 		public void OnPathChanged( string newPath )
@@ -843,7 +846,10 @@ namespace SimpleFileBrowser
 						if( ( directoryInfo.Attributes & ignoredFileAttributes ) != 0 )
 							continue;
 					}
-
+					if( checkValidateItem != null && !checkValidateItem(item) ){
+						continue;
+					}
+					
 					if( m_searchString.Length == 0 || item.Name.ToLower().Contains( searchStringLowercase ) )
 						validItems.Add( item );
 				}
@@ -972,7 +978,7 @@ namespace SimpleFileBrowser
 			return true;
 		}
 
-		public static bool ShowLoadDialog( OnSuccess onSuccess, OnCancel onCancel,
+		public static bool ShowLoadDialog( OnSuccess onSuccess, OnCancel onCancel, Func<FileSystemInfo,bool> checkValidateItem,
 										   bool folderMode = false, string initialPath = null,
 										   string title = "Load", string loadButtonText = "Select" )
 		{
@@ -984,6 +990,7 @@ namespace SimpleFileBrowser
 
 			Instance.onSuccess = onSuccess;
 			Instance.onCancel = onCancel;
+			Instance.checkValidateItem = checkValidateItem;
 
 			Instance.FolderSelectMode = folderMode;
 			Instance.Title = title;
@@ -1013,7 +1020,7 @@ namespace SimpleFileBrowser
 		public static IEnumerator WaitForLoadDialog( bool folderMode = false, string initialPath = null,
 													 string title = "Load", string loadButtonText = "Select" )
 		{
-			if( !ShowLoadDialog( null, null, folderMode, initialPath, title, loadButtonText ) )
+			if( !ShowLoadDialog( null, null, null, folderMode, initialPath, title, loadButtonText ) )
 				yield break;
 
 			while( Instance.gameObject.activeSelf )
